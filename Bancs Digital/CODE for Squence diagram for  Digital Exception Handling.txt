@@ -1,0 +1,68 @@
+\@startuml
+skinparam sequence {
+    ArrowColor blue
+    ActorBorderColor blue
+    LifeLineBorderColor #33A8FF
+    LifeLineBackgroundColor #33F9FF
+    ParticipantBorderColor DeepSkyBlue
+    ParticipantBackgroundColor DodgerBlue
+    ParticipantFontColor #A9DCDF
+    ActorBackgroundColor aqua
+    ActorFontColor black
+}
+
+title MicroService Error Handling
+actor User
+control "API-GATEWAY" as api #33D1FF
+participant "AUTHORIZATION-SERVER" as auth
+control "RESOURCE-SERVER" as resource #33D1FF
+database "DATABASE" as database #33D1FF
+participant "EXTERNAL-RESOURCE" as external
+
+
+autonumber
+
+User -> api : getData service (with access Token)
+activate api
+api -> auth : validateToken
+auth --> api : return response
+alt if response is invalid token
+	api --> User : redirect to login
+else
+	api -> resource : getData (inject in header x-access-allowed:Y)
+end
+resource -> resource : check if header has x-access-allowed as "Y"
+alt if header have x-access-allowed as "Y"
+	resource -> database : getPartOfData
+	database --> resource : <font color=red>Return Error</font> or Data
+	 note right
+	    Custom : Api DB exception will be raised as required
+	 end note
+	group for External Service to be called 
+		resource -> external : getRemainingData
+		external --> resource : <font color=red>Return Error</font> or Data
+		note right
+	    Custom : Api DB exception will be raised as required
+	 end note
+		resource --> resource : create response 
+        note right
+            Exception Handling will be done based on :
+                a) response has error/exception
+                b) response has expected data
+            Spring Aspect for ControllerAdvice is used 
+                to raise exception
+        end note
+	end
+	resource --> api : return response
+end 
+api --> User : return response 
+	 note right
+	    Response may contain :-
+	        a) valid data or
+	        b) exception details
+	 end note
+deactivate api
+
+center footer <b>*</b> Detailed Diagram for high level calls.
+
+@enduml

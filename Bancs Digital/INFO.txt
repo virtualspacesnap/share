@@ -1,0 +1,54 @@
+#-------- Second Level Caching ------------#
+spring.jpa.properties.hibernate.cache.use_second_level_cache=true
+spring.jpa.properties.hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+spring.jpa.properties.hibernate.cache.use_query_cache=true
+spring.jpa.properties.javax.persistence.sharedCache.mode=ENABLE_SELECTIVE
+spring.jpa.properties.hibernate.javax.cache.missing_cache_strategy=create
+
+
+## ------ DB config settings : ORACLE ----- ##
+component.datasource.required = Y
+component.datasource.txnManagerName = ComponentDbTransactionManager
+component.datasource.repobasepackage = <<JPA REPOSITORY PACKAGE>>
+component.datasource.username = <<USER ID>>
+component.datasource.password = <<PASSWORD>>
+component.datasource.url = jdbc:oracle:thin:@<<HOST>>:<<PORT>>:<<DB NAME>>
+component.datasource.driver-class-name = oracle.jdbc.driver.OracleDriver
+component.datasource.maxActive = 20
+component.datasource.maxIdle = 20
+component.datasource.minIdle = 10
+component.datasource.initialSize = 10
+component.datasource.maxWait = 20000
+component.datasource.entityClassPackage = <<DB Pojo Entity Package>>
+component.datasource.showSQL = True
+
+
+#----- HTTP CONFIGS FOR REST EXCHANGE ------#
+http.connect_timeout = 5000
+http.request_timeout = 360000
+http.socket_timeout = 360000
+http.max_connection = 25
+http.default_max_per_route = 25
+http.max_per_route = 10
+http.configapply = Y
+http.host = localhost
+http.addInterceptor = N
+
+
+# -----------------  settings for db log  ---------------------#
+log.datasource.url= jdbc:oracle:thin:@<<HOST>>:<<PORT>>:<<DB NAME>>
+log.datasource.username=<<USER ID>>
+log.datasource.password=<<PASSWORD>>
+log.datasource.validationquery = select 1 from dual
+## Allowed Values : DBERR_PUSH / ERROR / WARN / INFO / DEBUG / TRACE
+log.datasource.loglevel = DBERR_PUSH
+log.datasource.enable = N
+log.datasource.tableName = COMPONENT_APP_LOGS
+log.datasource.logBufferSize = 1
+log.datasource.clearlogsonstartup = Y
+log.datasource.asynclogger = com.digital
+log.datasource.driver =oracle.jdbc.OracleDriver
+
+
+#------ Additional error in Exception Utils : if enabled then additional error will be present in response -----#
+additional.exception.details = Y
